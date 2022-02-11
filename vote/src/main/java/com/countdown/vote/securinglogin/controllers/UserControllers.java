@@ -3,12 +3,15 @@ package com.countdown.vote.securinglogin.controllers;
 
 import com.countdown.vote.securinglogin.models.User;
 import com.countdown.vote.securinglogin.repo.UserRepo;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+
+import java.util.Collection;
 
 @Controller
 public class UserControllers {
@@ -21,8 +24,13 @@ public class UserControllers {
     }
 
     @GetMapping("/sign-up")
-    public String showSignupFrom(Model model) {
-        model.addAllAttributes("user", new User());
+    public String showSignupForm(Model model){
+        model.addAttribute("user", new User() {
+            @Override
+            public Collection<? extends GrantedAuthority> geAuthorities() {
+                return null;
+            }
+        });
         return "users/sign-up";
     }
 
@@ -31,7 +39,7 @@ public class UserControllers {
         String hash = passwordEncoder.encode(user.getPassword());
         user.setPassword(hash);
         userDao.save(user);
-        return "redirect:login";
+        return "redirect:/login";
     }
 
 
